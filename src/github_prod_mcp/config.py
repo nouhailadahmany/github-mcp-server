@@ -22,7 +22,7 @@ class Settings(BaseSettings):
         default=30.0,
         alias="GITHUB_TIMEOUT_SECONDS",
     )
-    rest_host: str = Field(default="127.0.0.1", alias="REST_HOST")
+    rest_host: str = Field(default="0.0.0.0", alias="REST_HOST")
     rest_port: int = Field(default=8080, alias="REST_PORT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
@@ -38,5 +38,4 @@ class Settings(BaseSettings):
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings.model_validate({})
-
-# Made with Bob
+    

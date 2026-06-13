@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -238,10 +239,11 @@ async def list_workflow_runs(request: ListWorkflowRunsRequest) -> dict[str, obje
 
 def main() -> None:
     settings = get_settings()
+    port = int(os.environ.get("PORT", settings.rest_port))
     uvicorn.run(
         "github_prod_mcp.rest_api:app",
-        host=settings.rest_host,
-        port=settings.rest_port,
+        host="0.0.0.0",
+        port=port,
         reload=False,
         log_level=settings.log_level.lower(),
     )
@@ -249,5 +251,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
