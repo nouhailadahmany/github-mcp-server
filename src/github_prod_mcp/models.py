@@ -119,6 +119,15 @@ class CreateOrUpdateFileRequest(OwnerRepoRequest):
     author: dict[str, str] | None = None
 
 
+class AppendToFileRequest(OwnerRepoRequest):
+    path: str = Field(..., min_length=1, description="Repository file path")
+    content: str = Field(..., min_length=1, description="Content to append to the file")
+    message: str = Field(default="Append content to file", description="Commit message")
+    branch: str | None = Field(default=None, description="Branch name (defaults to repository's default branch)")
+    committer: dict[str, str] | None = None
+    author: dict[str, str] | None = None
+
+
 class DeleteFileRequest(OwnerRepoRequest):
     path: str = Field(..., min_length=1)
     message: str = Field(..., min_length=1)

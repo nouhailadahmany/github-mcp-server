@@ -277,6 +277,41 @@ class GitHubApiClient:
             json_body={k: v for k, v in payload.items() if v is not None},
         )
 
+    def append_to_file(
+        self,
+        owner: str,
+        repo: str,
+        path: str,
+        content: str,
+        message: str,
+        branch: str | None,
+        committer: dict[str, str] | None,
+        author: dict[str, str] | None,
+    ) -> Any:
+        # First, get the current file content and SHA
+        file_info = self.get_file_content(owner, repo, path, branch)
+        
+        # Decode the existing content
+        existing_content = base64.b64decode(file_info["content"]).decode("utf-8")
+        
+        # Append new content
+        updated_content = existing_content + content
+        
+        # Update the file with appended content
+        payload = {
+            "message": message,
+            "content": base64.b64encode(updated_content.encode("utf-8")).decode("utf-8"),
+            "sha": file_info["sha"],
+            "branch": branch,
+            "committer": committer,
+            "author": author,
+        }
+        return self._request(
+            "PUT",
+            f"/repos/{owner}/{repo}/contents/{path}",
+            json_body={k: v for k, v in payload.items() if v is not None},
+        )
+
     def delete_file(
         self,
         owner: str,

@@ -38,6 +38,7 @@ Production-ready GitHub MCP server implemented in Python, based on the official 
 - `get_commit`
 - `compare_commits`
 - `create_or_update_file`
+- `append_to_file`
 - `delete_file`
 - `create_repository_dispatch`
 - `trigger_workflow_dispatch`
@@ -201,6 +202,21 @@ Content-Type: application/json
   "inputs": {
     "environment": "prod"
   }
+}
+```
+
+### Append to file
+
+```http
+POST /tools/append_to_file
+Content-Type: application/json
+
+{
+  "owner": "octocat",
+  "repo": "Hello-World",
+  "path": "README.md",
+  "content": "\n\n## New Section\n\nThis content will be appended to the file.",
+  "message": "Append new section to README"
 }
 ```
 
