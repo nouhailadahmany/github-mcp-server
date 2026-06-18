@@ -66,12 +66,9 @@ class GitHubService:
                 ToolDescriptor(name="get_commit", description="Get a commit", rest_path="/tools/get_commit", request_model="GetCommitRequest"),
                 ToolDescriptor(name="compare_commits", description="Compare commits", rest_path="/tools/compare_commits", request_model="CompareCommitsRequest"),
                 ToolDescriptor(name="create_or_update_file", description="Create or update a repository file", rest_path="/tools/create_or_update_file", request_model="CreateOrUpdateFileRequest"),
-<<<<<<< HEAD
                 ToolDescriptor(name="insert_content", description="Insert content at a specific line in a file without recreating it", rest_path="/tools/insert_content", request_model="InsertContentRequest"),
                 ToolDescriptor(name="replace_content", description="Replace specific content in a file without recreating it", rest_path="/tools/replace_content", request_model="ReplaceContentRequest"),
-=======
                 ToolDescriptor(name="append_to_file", description="Append content to an existing repository file", rest_path="/tools/append_to_file", request_model="AppendToFileRequest"),
->>>>>>> 01f05d4e53213c6334a51cea279a6eacb46277dc
                 ToolDescriptor(name="delete_file", description="Delete a repository file", rest_path="/tools/delete_file", request_model="DeleteFileRequest"),
                 ToolDescriptor(name="create_repository_dispatch", description="Create a repository dispatch event", rest_path="/tools/create_repository_dispatch", request_model="CreateDispatchEventRequest"),
                 ToolDescriptor(name="trigger_workflow_dispatch", description="Trigger a workflow dispatch", rest_path="/tools/trigger_workflow_dispatch", request_model="TriggerWorkflowDispatchRequest"),
