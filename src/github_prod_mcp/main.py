@@ -8,6 +8,7 @@ from typing import Any, Callable
 from github_prod_mcp.config import get_settings
 from github_prod_mcp.github_api import GitHubApiClient, GitHubApiError
 from github_prod_mcp.models import (
+    AppendToFileRequest,
     BranchRequest,
     CompareCommitsRequest,
     CreateCommentRequest,
@@ -86,6 +87,7 @@ def _build_tools() -> list[dict[str, Any]]:
         {"name": "get_commit", "description": "Get a commit", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "ref": {"type": "string"}}, "required": ["owner", "repo", "ref"], "additionalProperties": False}},
         {"name": "compare_commits", "description": "Compare commits", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "basehead": {"type": "string"}}, "required": ["owner", "repo", "basehead"], "additionalProperties": False}},
         {"name": "create_or_update_file", "description": "Create or update a repository file", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "path": {"type": "string"}, "message": {"type": "string"}, "content": {"type": "string"}, "branch": {"type": "string"}, "sha": {"type": "string"}, "committer": {"type": "object"}, "author": {"type": "object"}}, "required": ["owner", "repo", "path", "message", "content"], "additionalProperties": False}},
+        {"name": "append_to_file", "description": "Append content to an existing repository file", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "path": {"type": "string"}, "content": {"type": "string"}, "message": {"type": "string"}, "branch": {"type": "string"}, "committer": {"type": "object"}, "author": {"type": "object"}}, "required": ["owner", "repo", "path", "content"], "additionalProperties": False}},
         {"name": "delete_file", "description": "Delete a repository file", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "path": {"type": "string"}, "message": {"type": "string"}, "sha": {"type": "string"}, "branch": {"type": "string"}, "committer": {"type": "object"}, "author": {"type": "object"}}, "required": ["owner", "repo", "path", "message", "sha"], "additionalProperties": False}},
         {"name": "create_repository_dispatch", "description": "Create a repository dispatch event", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "event_type": {"type": "string"}, "client_payload": {"type": "object"}}, "required": ["owner", "repo", "event_type"], "additionalProperties": False}},
         {"name": "trigger_workflow_dispatch", "description": "Trigger a workflow dispatch", "inputSchema": {"type": "object", "properties": {"owner": {"type": "string"}, "repo": {"type": "string"}, "workflow_id": {"type": "string"}, "ref": {"type": "string"}, "inputs": {"type": "object"}}, "required": ["owner", "repo", "workflow_id", "ref"], "additionalProperties": False}},
@@ -118,6 +120,7 @@ def _dispatch_tool(service: GitHubService, name: str, arguments: dict[str, Any])
         "get_commit": lambda data: service.get_commit(GetCommitRequest.model_validate(data)),
         "compare_commits": lambda data: service.compare_commits(CompareCommitsRequest.model_validate(data)),
         "create_or_update_file": lambda data: service.create_or_update_file(CreateOrUpdateFileRequest.model_validate(data)),
+        "append_to_file": lambda data: service.append_to_file(AppendToFileRequest.model_validate(data)),
         "delete_file": lambda data: service.delete_file(DeleteFileRequest.model_validate(data)),
         "create_repository_dispatch": lambda data: service.create_repository_dispatch(CreateDispatchEventRequest.model_validate(data)),
         "trigger_workflow_dispatch": lambda data: service.trigger_workflow_dispatch(TriggerWorkflowDispatchRequest.model_validate(data)),

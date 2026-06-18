@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from github_prod_mcp.config import get_settings
 from github_prod_mcp.github_api import GitHubApiClient, GitHubApiError
 from github_prod_mcp.models import (
+    AppendToFileRequest,
     BranchRequest,
     CompareCommitsRequest,
     CreateCommentRequest,
@@ -211,6 +212,12 @@ async def compare_commits(request: CompareCommitsRequest) -> dict[str, object]:
 async def create_or_update_file(request: CreateOrUpdateFileRequest) -> dict[str, object]:
     service: GitHubService = app.state.service
     return service.create_or_update_file(request).model_dump()
+
+
+@app.post("/tools/append_to_file")
+async def append_to_file(request: AppendToFileRequest) -> dict[str, object]:
+    service: GitHubService = app.state.service
+    return service.append_to_file(request).model_dump()
 
 
 @app.post("/tools/delete_file")
