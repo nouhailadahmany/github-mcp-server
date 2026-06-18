@@ -156,6 +156,30 @@ class CompareCommitsRequest(OwnerRepoRequest):
     basehead: str = Field(..., min_length=3, description="Comparison specifier like main...feature-branch")
 
 
+class InsertContentRequest(OwnerRepoRequest):
+    """Insert new content at a specific line in a file without recreating it"""
+    path: str = Field(..., min_length=1, description="File path in repository")
+    line_number: int = Field(..., ge=1, description="Line number where content will be inserted (1-based)")
+    content: str = Field(..., min_length=1, description="Content to insert at the specified line")
+    message: str = Field(..., min_length=1, description="Commit message")
+    branch: str | None = Field(default=None, description="Branch name (default: repository default branch)")
+    committer: dict[str, str] | None = None
+    author: dict[str, str] | None = None
+
+
+class ReplaceContentRequest(OwnerRepoRequest):
+    """Replace specific content in a file without recreating it"""
+    path: str = Field(..., min_length=1, description="File path in repository")
+    old_content: str = Field(..., min_length=1, description="Content to find and replace")
+    new_content: str = Field(..., min_length=1, description="New content to replace with")
+    message: str = Field(..., min_length=1, description="Commit message")
+    branch: str | None = Field(default=None, description="Branch name (default: repository default branch)")
+    replace_all: bool = Field(default=False, description="Replace all occurrences (default: false)")
+    occurrence: int | None = Field(default=None, ge=1, description="Specific occurrence number to replace (1-based). If not set and replace_all=false, replaces first occurrence")
+    committer: dict[str, str] | None = None
+    author: dict[str, str] | None = None
+
+
 class GenericGitHubResponse(BaseModel):
     ok: bool = True
     operation: str

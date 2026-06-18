@@ -21,12 +21,14 @@ from github_prod_mcp.models import (
     DeleteFileRequest,
     FileContentRequest,
     GetCommitRequest,
+    InsertContentRequest,
     IssueIdentifierRequest,
     ListRepositoryFilesRequest,
     ListWorkflowRunsRequest,
     MergePullRequestRequest,
     OwnerRepoRequest,
     PullRequestIdentifierRequest,
+    ReplaceContentRequest,
     RepositoryDetailsRequest,
     SearchCodeRequest,
     SearchIssuesRequest,
@@ -211,6 +213,18 @@ async def compare_commits(request: CompareCommitsRequest) -> dict[str, object]:
 async def create_or_update_file(request: CreateOrUpdateFileRequest) -> dict[str, object]:
     service: GitHubService = app.state.service
     return service.create_or_update_file(request).model_dump()
+
+
+@app.post("/tools/insert_content")
+async def insert_content(request: InsertContentRequest) -> dict[str, object]:
+    service: GitHubService = app.state.service
+    return service.insert_content(request).model_dump()
+
+
+@app.post("/tools/replace_content")
+async def replace_content(request: ReplaceContentRequest) -> dict[str, object]:
+    service: GitHubService = app.state.service
+    return service.replace_content(request).model_dump()
 
 
 @app.post("/tools/delete_file")

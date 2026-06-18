@@ -357,4 +357,121 @@ class GitHubApiClient:
             params={k: v for k, v in params.items() if v is not None},
         )
 
+    def insert_content(
+        self,
+        owner: str,
+        repo: str,
+        path: str,
+        line_number: int,
+        content: str,
+        message: str,
+        branch: str | None,
+        committer: dict[str, str] | None,
+        author: dict[str, str] | None,
+    ) -> Any:
+        """Insert content at a specific line in a file
+        
+        This method:
+        1. Gets the current file content
+        2. Splits it into lines
+        3. Inserts new content at the specified line
+        4. Updates the file with the modified content
+        """
+        # Get current file content
+        file_data = self.get_file_content(owner, repo, path, branch)
+        
+        # Decode current content
+        current_content_b64 = file_data.get("content", "")
+        current_content = base64.b64decode(current_content_b64).decode("utf-8")
+        
+        # Split into lines
+        lines = current_content.split("\n")
+        
+        # Insert new content at specified line (1-based index)
+        insert_index = line_number - 1
+        if insert_index < 0:
+            insert_index = 0
+        elif insert_index > len(lines):
+            insert_index = len(lines)
+        
+        lines.insert(insert_index, content)
+        
+        # Join back
+        new_content = "\n".join(lines)
+        
+        # Update file
+        return self.create_or_update_file(
+            owner, repo, path, message, new_content,
+            branch, file_data.get("sha"), committer, author
+        )
+
+    def replace_content(
+        self,
+        owner: str,
+        repo: str,
+        path: str,
+        old_content: str,
+        new_content: str,
+        message: str,
+        branch: str | None,
+        replace_all: bool,
+        occurrence: int | None,
+        committer: dict[str, str] | None,
+        author: dict[str, str] | None,
+    ) -> Any:
+        """Replace specific content in a file
+        
+        This method:
+        1. Gets the current file content
+        2. Replaces old_content with new_content based on parameters
+        3. Updates the file with the modified content
+        
+        Parameters:
+        - replace_all: If True, replaces all occurrences
+        - occurrence: If set, replaces only the Nth occurrence (1-based)
+        - If both False/None, replaces only the first occurrence
+        """
+        # Get current file content
+        file_data = self.get_file_content(owner, repo, path, branch)
+        
+        # Decode current content
+        current_content_b64 = file_data.get("content", "")
+        current_content = base64.b64decode(current_content_b64).decode("utf-8")
+        
+        # Replace content based on parameters
+        if replace_all:
+            # Replace all occurrences
+            modified_content = current_content.replace(old_content, new_content)
+        elif occurrence is not None:
+            # Replace specific occurrence (1-based)
+            parts = current_content.split(old_content)
+            
+            # Check if occurrence exists
+            if occurrence > len(parts) - 1:
+                raise GitHubApiError(
+                    400,
+                    f"Occurrence {occurrence} not found. Only {len(parts) - 1} occurrence(s) exist in file: {path}",
+                    {"old_content": old_content, "total_occurrences": len(parts) - 1}
+                )
+            
+            # Rebuild content with only the specified occurrence replaced
+            modified_content = old_content.join(parts[:occurrence]) + new_content + old_content.join(parts[occurrence:])
+        else:
+            # Replace only first occurrence
+            modified_content = current_content.replace(old_content, new_content, 1)
+        
+        # Check if any replacement was made
+        if modified_content == current_content:
+            raise GitHubApiError(
+                400,
+                f"Content to replace not found in file: {path}",
+                {"old_content": old_content}
+            )
+        
+        # Update file
+        return self.create_or_update_file(
+            owner, repo, path, message, modified_content,
+            branch, file_data.get("sha"), committer, author
+        )
+
 # Made with Bob
